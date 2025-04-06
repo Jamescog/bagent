@@ -60,4 +60,4 @@ def setup_routes(app, socket_manager):
     app.router.add_post("/emit", emit_event)
     # app.router.add_get("/nice", nice_callers)
     app.router.add_post("/emit-bingo", emit_bingo_handler)
-    app.route.add_post("/send-new", nice_callers)
+    app.router.add_post("/send-new", nice_callers)
