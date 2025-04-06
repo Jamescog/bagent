@@ -42,7 +42,7 @@ def setup_routes(app, socket_manager):
                 "is_agent": True,
             }
             await socket_manager.emit(client_name, "enter_new_game", data)
-            await sleep(0.5)
+            await sleep(1.2)
 
     async def emit_bingo_handler(request):
         data = await request.json()
