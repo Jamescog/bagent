@@ -1,0 +1,4 @@
+redis
+python-socketio
+aiohttp
+python-dotenv

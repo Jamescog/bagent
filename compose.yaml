@@ -1,0 +1,39 @@
+services:
+  bagent-redis:
+    image: redis:7
+    container_name: bagent-redis
+    ports:
+      - "6372:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default
+
+  bagent-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bagent-backend
+    ports:
+      - "8080:8080"
+    command: python app.py
+    volumes:
+      - .:/app
+    depends_on:
+      bagent-redis:
+        condition: service_healthy
+    networks:
+      - default
+
+volumes:
+  redis_data:
+
+networks:
+  default:
+    external:
+      name: shared-net
