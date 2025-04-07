@@ -25,7 +25,7 @@ def setup_routes(app, socket_manager):
             client_name = data.get("client")
             event = data.get("event")
             raw_data = data.get("data", "{}")
-            payload = eval(raw_data)  # ⚠️ Use json.loads() in production!
+            payload = eval(raw_data)  
 
             await socket_manager.emit(client_name, event, payload)
             return web.Response(text=f"Sent to {client_name}: {event} - {payload}")
@@ -46,6 +46,7 @@ def setup_routes(app, socket_manager):
 
     async def emit_bingo_handler(request):
         data = await request.json()
+        data['is_agent'] = True
         await socket_manager.emit(data['agent'], "bingo", data)
         return web.json_response({"msg": "received"})
 
