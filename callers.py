@@ -28,22 +28,25 @@ async def get_nice_availables(bet_amount:int):
             return agents
     
 
-async def get_next_n_available_agents(bet_amount: int, n: int):
+async def get_next_n_available_agents(bet_amount: int, n: int, platform:str):
     available = await get_nice_availables(bet_amount)
     if not available:
         return []
 
     available_map = {str(agent["telegram_id"]): agent for agent in available}
-    reference_key = "nice:all-agents"
-    index_key = f"nice:rotation-index:{bet_amount}"
+    reference_key = f"{platform}:all-agents"
+    index_key = f"{platform}:rotation-index:{bet_amount}"
+    winners_key = f"{platform}:winners:{bet_amount}"
+
+    recent_winners = await redis_client.lrange(winners_key, 0, -1)
 
     full_ids = await redis_client.lrange(reference_key, 0, -1)
     if not full_ids:
         await refresh_all_agents_cache()
         full_ids = await redis_client.lrange(reference_key, 0, -1)
-
-        
-
+        if not full_ids:  # If still empty, return early
+            print("No agents found in cache after refresh.")
+            return []
 
     raw_index = await redis_client.get(index_key)
     start_index = int(raw_index) if raw_index else 0
@@ -55,7 +58,7 @@ async def get_next_n_available_agents(bet_amount: int, n: int):
 
     while len(result) < n and tries < total:
         uid = full_ids[i % total]
-        if uid in available_map:
+        if uid in available_map and uid not in recent_winners:
             result.append(available_map[uid])
         i += 1
         tries += 1
