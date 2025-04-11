@@ -60,8 +60,8 @@ def setup_routes(app, socket_manager):
     async def send_new(request):
         bet_amount = request.query.get("bet-amount")
         platform = request.query.get("platform")
-        print("bet_amount", bet_amount, flush=True)
-        print("platform", platform, flush=True)
+        if int(bet_amount) not in  [10,25]:
+            return web.json_response({"error": "bet-amount not valid"}, status=400)
         if not platform:
             return web.json_response({"error": "platform not provided"}, status=400)
         if not bet_amount:
@@ -97,6 +97,8 @@ def setup_routes(app, socket_manager):
         bet_amount = data.get("bet_amount")
         agent = data.get("agent")
         arr = data.get("arr")
+        if int(bet_amount) not in  [10,25]:
+            return web.json_response({"error": "bet_amount not valid"}, status=400)
         if not arr:
             return web.json_response({"error": "Agent Real Ratio not provided"}, status=400)
         if not bet_amount:
