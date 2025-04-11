@@ -104,7 +104,7 @@ def setup_routes(app, socket_manager):
         if not agent:
             return web.json_response({"error": "agent not provided"}, status=400)
         print("arr", arr)
-        players = await get_next_n_available_agents(bet_amount, 2)
+        players = await get_next_n_available_agents(bet_amount, 2, agent)
         create_task(emit_enter_game(agent, players))
         return web.json_response({"msg": "sent"})
       
